@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Leadership Network — Feedback Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --oc-orange:       #E8813A;
+      --oc-orange-soft:  #F5E6D8;
+      --oc-orange-mid:   #C96E28;
+      --trust-blue:      #1E3A5C;
+      --trust-blue-soft: #E4EBF4;
+      --trust-blue-mid:  #2C5280;
+      --warm-sand:       #EDE0CC;
+      --warm-cream:      #FAF6F0;
+      --sage:            #7A9E8A;
+      --sage-dark:       #4A7A5C;
+      --sage-soft:       #E6EFEA;
+      --slate:           #3D3D3D;
+      --slate-light:     #6B6B6B;
+      --mist:            #F4F1EC;
+      --white:           #FEFCFA;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--warm-cream);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--slate);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      background: var(--trust-blue);
+      padding: 40px 48px 30px;
+    }
+    .site-header .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--oc-orange);
+      margin-bottom: 8px;
+    }
+    .site-header h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 5px;
+    }
+    .site-header .sub {
+      font-size: 13.5px;
+      font-weight: 300;
+      color: rgba(254,252,250,.68);
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--trust-blue-mid);
+      padding: 14px 48px;
+      display: flex;
+      gap: 44px;
+      flex-wrap: wrap;
+    }
+    .stat { display: flex; align-items: baseline; gap: 8px; }
+    .stat-n {
+      font-family: 'Lora', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--oc-orange);
+    }
+    .stat-lbl {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(254,252,250,.72);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 44px 48px 64px;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 52px; }
+    .section-hd {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .section-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .section-hd .eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--slate-light);
+      margin-bottom: 2px;
+    }
+    .section-hd h2 {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--trust-blue);
+    }
+
+    /* ── CHART CARD ── */
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--warm-sand);
+      border-radius: 12px;
+      padding: 28px 30px 20px;
+    }
+    .chart-wrap { position: relative; }
+    .chart-note {
+      margin-top: 12px;
+      font-size: 11.5px;
+      color: var(--slate-light);
+      font-style: italic;
+    }
+    @media (max-width: 600px) {
+      .chart-card { padding: 18px 12px 14px; border-radius: 10px; }
+      .chart-wrap.chart-wrap-strengths { height: 360px !important; }
+      .chart-wrap.chart-wrap-needs { height: 520px !important; }
+    }
+
+    /* ── DIVIDER ── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--warm-sand);
+      margin: 44px 0;
+    }
+
+    /* ── SUGGESTION GRID ── */
+    .suggestion-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 780px) {
+      .suggestion-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      .suggestion-grid { grid-template-columns: 1fr; }
+      .main { padding: 32px 14px 48px; }
+      .site-header { padding: 28px 20px 22px; }
+      .stats-bar { padding: 12px 20px; gap: 18px 22px; }
+      .site-header h1 { font-size: 22px; line-height: 1.25; }
+      .stat-n { font-size: 19px; }
+      .section-hd h2 { font-size: 16px; line-height: 1.35; }
+      .section-hd { gap: 10px; }
+    }
+
+    .sug-card {
+      background: var(--mist);
+      border: 1px solid var(--warm-sand);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .sug-count {
+      font-family: 'Lora', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--oc-orange);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .sug-card h4 {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--trust-blue);
+      margin-bottom: 8px;
+    }
+    .sug-card p {
+      font-size: 13px;
+      color: var(--slate);
+      line-height: 1.65;
+    }
+
+    /* ── OUTLIER CARDS ── */
+    .outlier-card {
+      background: var(--white);
+      border: 1px solid var(--warm-sand);
+      border-left: 4px solid var(--oc-orange);
+      border-radius: 0 10px 10px 0;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+    }
+    .outlier-card:last-child { margin-bottom: 0; }
+    .outlier-lbl {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--oc-orange-mid);
+      margin-bottom: 8px;
+    }
+    .outlier-card blockquote {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--slate);
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .outlier-card cite {
+      font-size: 11.5px;
+      color: var(--slate-light);
+      font-style: normal;
+    }
+    .outlier-card.blue  { border-left-color: var(--trust-blue); }
+    .outlier-card.blue  .outlier-lbl { color: var(--trust-blue-mid); }
+    .outlier-card.sage  { border-left-color: var(--sage); }
+    .outlier-card.sage  .outlier-lbl { color: var(--sage-dark); }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="eyebrow" style="opacity:.8">Demo · all responses invented, no real participant data</div>
+  <div class="eyebrow">Program Feedback · Demo data</div>
+  <h1>AI Leadership Network — Session Feedback Dashboard</h1>
+  <div class="sub">Sample end-of-year survey · 30 invented responses · Qualitative themes coded by frequency</div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-n">30</span><span class="stat-lbl">total responses</span></div>
+  <div class="stat"><span class="stat-n">80%</span><span class="stat-lbl">willing to be contacted</span></div>
+  <div class="stat"><span class="stat-n">3</span><span class="stat-lbl">open-ended prompts</span></div>
+  <div class="stat"><span class="stat-n">~10 min</span><span class="stat-lbl">response window (same session)</span></div>
+</div>
+
+<main class="main">
+
+  <!-- ═══ Q1 STRENGTHS ═══ -->
+  <section class="section">
+    <div class="section-hd">
+      <div class="section-dot" style="background: var(--trust-blue);"></div>
+      <div>
+        <div class="eyebrow">Question 1 · Strengths</div>
+        <h2>What aspects of the program worked particularly well?</h2>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-wrap chart-wrap-strengths" style="height: 280px;">
+        <canvas id="strengthsChart"></canvas>
+      </div>
+      <p class="chart-note">Themes coded from 30 invented responses. Multi-coding applied — a single response may reflect more than one theme.</p>
+    </div>
+  </section>
+
+  <!-- ═══ Q2 NEEDS ═══ -->
+  <section class="section">
+    <div class="section-hd">
+      <div class="section-dot" style="background: var(--sage);"></div>
+      <div>
+        <div class="eyebrow">Question 2 · Needs &amp; Improvements</div>
+        <h2>What do you need more of, or what could be improved?</h2>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-wrap chart-wrap-needs" style="height: 360px;">
+        <canvas id="needsChart"></canvas>
+      </div>
+      <p class="chart-note">Coded from 27 responses (3 left Q2 blank). Needs are more distributed than strengths — no single dominant theme, which signals a program already perceived as strong overall.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Q3 OPEN SUGGESTIONS ═══ -->
+  <section class="section">
+    <div class="section-hd">
+      <div class="section-dot" style="background: var(--oc-orange);"></div>
+      <div>
+        <div class="eyebrow">Question 3 · Open Suggestions</div>
+        <h2>General comments &amp; suggestions not covered above</h2>
+      </div>
+    </div>
+    <div class="suggestion-grid">
+      <div class="sug-card">
+        <div class="sug-count">4×</div>
+        <h4>Earlier Agendas</h4>
+        <p>Participants want topics a week ahead so they can bring the right colleagues from their district.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">3×</div>
+        <h4>Cabinet-Level Visibility</h4>
+        <p>Leaders want superintendents in the room more often so decisions made here carry weight back home.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">3×</div>
+        <h4>Elementary Breakouts</h4>
+        <p>TK–6 teams say their needs differ from high school and want their own time together.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">2×</div>
+        <h4>What Comes Next</h4>
+        <p>Returning members ask what year two and three of the network look like.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">2×</div>
+        <h4>Site Visits</h4>
+        <p>Seeing a classroom using AI well would make the stories in sessions concrete.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">1×</div>
+        <h4>Talking to Families</h4>
+        <p>Help districts explain AI to parents who hear mostly negative coverage.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">1×</div>
+        <h4>Keep the Reflection Activity</h4>
+        <p>The journey-mapping poster was singled out as worth repeating every year.</p>
+      </div>
+      <div class="sug-card">
+        <div class="sug-count">1×</div>
+        <h4>Equity Lens</h4>
+        <p>A first-time attendee asked who benefits from AI adoption and who gets left out.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ OUTLIERS ═══ -->
+  <section class="section">
+    <div class="section-hd">
+      <div class="section-dot" style="background: var(--oc-orange);"></div>
+      <div>
+        <div class="eyebrow">Signal Watch · Outlier Voices</div>
+        <h2>Distinct or dissenting perspectives worth acting on</h2>
+      </div>
+    </div>
+
+        <div class="outlier-card">
+      <div class="outlier-lbl">⚠ Session Preparation</div>
+      <blockquote>"I'd bring more people from my district if I knew what each session was about before the day of."</blockquote>
+      <cite>— Participant A, Sample District</cite>
+    </div>
+
+    <div class="outlier-card">
+      <div class="outlier-lbl">⚠ Speaker Quality Bar</div>
+      <blockquote>"Guest speakers should push our thinking. A couple felt like they were catching up to us."</blockquote>
+      <cite>— Participant B</cite>
+    </div>
+
+    <div class="outlier-card blue">
+      <div class="outlier-lbl">↔ Contrarian — Open Format as a Feature</div>
+      <blockquote>"I like that there isn't a rigid agenda. Some of the best moments came from where the conversation went."</blockquote>
+      <cite>— Participant C, Sample District</cite>
+    </div>
+
+    <div class="outlier-card sage">
+      <div class="outlier-lbl">→ Equity &amp; Critical Lens (First-Time Attendee)</div>
+      <blockquote>"It's exciting, but we should keep asking who benefits and who doesn't."</blockquote>
+      <cite>— Anonymous (first session attended)</cite>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const TRUST_BLUE     = '#1E3A5C';
+  const TRUST_BLUE_MID = '#2C5280';
+  const OC_ORANGE      = '#E8813A';
+  const SAGE           = '#7A9E8A';
+  const SLATE          = '#3D3D3D';
+
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.color = SLATE;
+
+  const isNarrow = () => window.innerWidth < 600;
+
+  function wrapLabel(label, maxChars) {
+    if (!label || label.length <= maxChars) return label;
+    const words = String(label).split(' ');
+    const lines = [];
+    let current = '';
+    for (const word of words) {
+      const candidate = current ? current + ' ' + word : word;
+      if (candidate.length > maxChars && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = candidate;
+      }
+    }
+    if (current) lines.push(current);
+    return lines;
+  }
+
+  function wrapTickCallback(value) {
+    const label = this.getLabelForValue(value);
+    return wrapLabel(label, isNarrow() ? 16 : 28);
+  }
+
+  // ── STRENGTHS CHART ──
+  new Chart(document.getElementById('strengthsChart'), {
+    type: 'bar',
+    data: {
+      labels: [
+        'Peer connections across districts',
+        'Hearing other districts\' AI stories',
+        'Curated resources',
+        'Current AI content',
+        'Facilitation quality',
+        'Pacing & format',
+        'Reflection time'
+      ],
+      datasets: [{
+        label: 'Responses',
+        data: [14, 12, 9, 7, 5, 4, 3],
+        backgroundColor: [
+          OC_ORANGE,
+          TRUST_BLUE,
+          '#2C5280',
+          '#3A6399',
+          '#426CA5',
+          '#4F7FB0',
+          '#6293C2'
+        ],
+        borderRadius: 5,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => `  ${ctx.parsed.x} of 25 responses` },
+          backgroundColor: TRUST_BLUE,
+          titleFont: { family: "'Lora', serif", size: 13 },
+          bodyFont: { family: "'DM Sans', sans-serif", size: 12 },
+          padding: 10,
+          cornerRadius: 6,
+        }
+      },
+      scales: {
+        x: {
+          max: 15,
+          grid: { color: 'rgba(237,224,204,0.55)' },
+          border: { display: false },
+          ticks: { stepSize: 3, font: { size: 11 }, color: '#6B6B6B' }
+        },
+        y: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            font: { size: isNarrow() ? 11 : 12.5 },
+            color: SLATE,
+            padding: 4,
+            autoSkip: false,
+            callback: wrapTickCallback
+          }
+        }
+      }
+    }
+  });
+
+  // ── NEEDS CHART ──
+  new Chart(document.getElementById('needsChart'), {
+    type: 'bar',
+    data: {
+      labels: [
+        'District case studies',
+        'Agenda shared in advance',
+        'Emerging tech deep dives',
+        'Grade-band breakouts',
+        'Support for solo attendees',
+        'More hands-on practice',
+        'Session length',
+        'Instructional strategies',
+        'Equity & safety lens',
+        'Family engagement',
+        'Vendor showcases'
+      ],
+      datasets: [{
+        label: 'Responses',
+        data: [5, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1],
+        backgroundColor: [
+          SAGE,
+          '#5A8B6F',
+          '#6B9B80',
+          '#7AAE90',
+          '#8CBF9F',
+          '#9ECFB0',
+          '#AFDFC0',
+          '#BFE8CF',
+          '#CFEEDD',
+          '#DAEEE5',
+          '#E6F3EC'
+        ],
+        borderRadius: 5,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => `  ${ctx.parsed.x} of 23 responses` },
+          backgroundColor: '#4A7A5C',
+          titleFont: { family: "'Lora', serif", size: 13 },
+          bodyFont: { family: "'DM Sans', sans-serif", size: 12 },
+          padding: 10,
+          cornerRadius: 6,
+        }
+      },
+      scales: {
+        x: {
+          max: 6,
+          grid: { color: 'rgba(237,224,204,0.55)' },
+          border: { display: false },
+          ticks: { stepSize: 1, font: { size: 11 }, color: '#6B6B6B' }
+        },
+        y: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            font: { size: isNarrow() ? 11 : 12.5 },
+            color: SLATE,
+            padding: 4,
+            autoSkip: false,
+            callback: wrapTickCallback
+          }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
