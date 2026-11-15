@@ -4,6 +4,8 @@ A one-page dashboard that turns open-ended survey responses into themes a progra
 
 > Demo build. Every response, quote, count, and name here is invented. No real participant data is included.
 
+**How it works:** https://wkriesel.github.io/program-feedback-dashboard/how-it-works.html covers the problem, the flow, the architecture, and the design decisions.
+
 ## The problem
 
 End-of-year surveys for a cross-district leadership network came back as long, open-ended answers. Read one by one, they blurred together. The team needed to see what was working, what people needed next, and which single voices deserved attention even though they weren't the majority.

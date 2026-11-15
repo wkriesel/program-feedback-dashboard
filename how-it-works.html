@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How it works · Program Feedback Dashboard</title>
+<meta name="description" content="How Program Feedback Dashboard works: the problem, the flow, the architecture, and the design decisions.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E3A5C;--accent:#E8813A;--accent-dk:#a8551a;--sage:#7A9E8A;--sand:#EDE0CC;--bg:#FAF6F0;--card:#fff;--ink:#2F2F2F;--muted:#5c6670;--line:#e4ddd2;--r:14px;--sh:0 1px 2px rgba(31,58,95,.06),0 8px 24px rgba(31,58,95,.08);--fh:'Lora',Georgia,serif;--fb:'DM Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16.5px;line-height:1.6}
+a{color:var(--navy)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.demo{background:var(--navy);color:#fff;text-align:center;font-size:12.5px;padding:7px 12px}
+.demo a{color:#fff}
+.top{background:#fff;border-bottom:1px solid var(--line)}
+.top-in{max-width:1040px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.brand{font-family:var(--fh);font-weight:600;color:var(--navy);font-size:17px;text-decoration:none}
+.tabs{display:flex;gap:4px}
+.tabs a{text-decoration:none;color:var(--muted);font-weight:500;font-size:15px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;border-bottom:3px solid transparent}
+.tabs a[aria-current]{color:var(--navy);border-bottom-color:var(--accent)}
+.hero{background:var(--navy);color:#fff;padding:44px 16px 48px}
+.hero-in{max-width:1040px;margin:0 auto}
+.kick{font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-family:var(--fh);font-size:clamp(1.9rem,5.5vw,3rem);line-height:1.15;margin:10px 0 12px;max-width:760px}
+.hero p{color:rgba(255,255,255,.85);max-width:660px;font-size:1.06rem}
+main{max-width:1040px;margin:0 auto;padding:34px 16px 70px}
+section+section{margin-top:46px}
+h2{font-family:var(--fh);color:var(--navy);font-size:1.5rem;line-height:1.2;margin-bottom:6px}
+h3{font-family:var(--fh);color:var(--navy);font-size:1.08rem;line-height:1.25;margin-bottom:4px}
+.lede{color:var(--muted);max-width:700px;margin-bottom:18px}
+.problem{background:#fff;border-left:5px solid var(--accent);border-radius:0 var(--r) var(--r) 0;padding:18px 20px;box-shadow:var(--sh);max-width:820px}
+.problem p+p{margin-top:10px}
+.flow{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:880px){.flow{grid-template-columns:1fr 26px 1fr 26px 1fr 26px 1fr}}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.step .k,.card .k{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-dk);margin-bottom:6px}
+.step p,.card p{font-size:.93rem;color:var(--muted)}
+.arr{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px;font-weight:700}
+@media(max-width:879px){.arr{transform:rotate(90deg);height:20px}}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.decs{display:grid;gap:12px}
+.dec{display:grid;grid-template-columns:38px 1fr;gap:14px}
+.dec .n{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+pre.code{background:#16263b;color:#d6e2f0;border-radius:var(--r);padding:16px;overflow-x:auto;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12.8px;line-height:1.6}
+pre.code .c{color:#8aa0b8} pre.code .k2{color:#f3b27a} pre.code .s{color:#a8d5b9}
+.lesson{background:var(--sand);border-radius:var(--r);padding:20px}
+.lesson p{max-width:760px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:999px;background:var(--accent-dk);color:#fff;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+footer{border-top:1px solid var(--line);background:#fff;text-align:center;font-size:13px;color:var(--muted);padding:22px 16px}
+</style>
+</head>
+<body>
+<div class="demo">Demo build &middot; every response is invented &middot; <a href="https://github.com/wkriesel/program-feedback-dashboard">source</a></div>
+<header class="top"><div class="top-in"><a class="brand" href="./">Program Feedback Dashboard</a>
+<nav class="tabs" aria-label="Pages"><a href="./">Demo</a><a href="how-it-works.html" aria-current="page">How it works</a></nav></div></header>
+<div class="hero"><div class="hero-in"><p class="kick">How it works</p><h1>Read every answer. Act on the pattern. Keep the outlier.</h1><p>A one-page dashboard that turns open-ended survey responses into themes a program team can act on the same week.</p></div></div>
+<main>
+<section aria-labelledby="h-p"><h2 id="h-p">The problem</h2><div class="problem"><p>End-of-year surveys for a cross-district leadership network came back as long, open-ended answers. Read one by one, they blurred together.</p><p>The team needed three things: what worked, what people needed next, and which single voices deserved attention even though they weren't the majority.</p></div></section>
+<section aria-labelledby="h-f"><h2 id="h-f">From raw answers to a planning meeting</h2><p class="lede">The work is in the coding. The page is how the finding travels.</p><div class="flow"><div class="step"><span class="k">Collect</span><h3>Three open prompts</h3><p>Strengths, needs, and open suggestions, answered in about ten minutes at the end of a session. The demo has 30 invented responses.</p></div><div class="arr" aria-hidden="true">&rarr;</div><div class="step"><span class="k">Code</span><h3>Themes from raw text</h3><p>Every answer gets read and coded into themes. Themes come out of what people actually wrote, not a list chosen in advance.</p></div><div class="arr" aria-hidden="true">&rarr;</div><div class="step"><span class="k">Count</span><h3>Frequency, not volume</h3><p>Strengths and needs chart by how many people raised each theme. Suggestions become short cards with a count.</p></div><div class="arr" aria-hidden="true">&rarr;</div><div class="step"><span class="k">Protect</span><h3>Signal watch</h3><p>Outlier and dissenting voices get their own section, so a small but important signal doesn't get averaged away.</p></div></div></section>
+<section aria-labelledby="h-a"><h2 id="h-a">Architecture</h2><p class="lede">Deliberately small. A page that opens anywhere and needs nothing to run.</p><div class="grid"><div class="card"><p class="k">Front end</p><h3>Single HTML file</h3><p>No build step. The coded data lives in the page, so it opens offline and can be emailed as one file.</p></div><div class="card"><p class="k">Charts</p><h3>Chart.js</h3><p>Horizontal bars sized for long theme labels, with wrapped tick labels so nothing gets cut off on a phone.</p></div><div class="card"><p class="k">Layout</p><h3>Phone-first</h3><p>It reads on a phone as well as a laptop, so it can be shared straight into a planning meeting.</p></div><div class="card"><p class="k">Privacy</p><h3>No backend at all</h3><p>Nothing to secure and nothing to leak. Only coded themes and selected quotes ever reach the page.</p></div></div></section>
+
+<section aria-labelledby="h-d"><h2 id="h-d">Design decisions</h2><div class="decs"><div class="card dec"><span class="n">1</span><div><h3>Themes, not word clouds</h3><p>A word cloud shows which words were common. Coded themes show what people meant, and a team can act on that.</p></div></div><div class="card dec"><span class="n">2</span><div><h3>Tell it in the order a team decides</h3><p>Strengths first, then needs, then suggestions, then outliers. That's the order a planning conversation actually runs.</p></div></div><div class="card dec"><span class="n">3</span><div><h3>A home for the dissenting view</h3><p>Signal watch exists because the contrarian answer is often the early warning. Averages bury it.</p></div></div><div class="card dec"><span class="n">4</span><div><h3>Counts on every card</h3><p>Every suggestion card shows how many people raised it, so one loud request doesn't read like a consensus.</p></div></div><div class="card dec"><span class="n">5</span><div><h3>Invented data in public</h3><p>The real responses stay private. This build uses invented answers and says so in the header.</p></div></div></div></section>
+<section aria-labelledby="h-l"><h2 id="h-l">What it shows about the work</h2><div class="lesson"><p>This is the same job a customer success lead does with support tickets and feedback forms: find the patterns, protect the outliers, and hand the product team something specific enough to build on.</p></div>
+<div class="row"><a class="btn" href="./">Try the demo</a><a class="btn ghost" href="https://github.com/wkriesel/program-feedback-dashboard">View source</a></div></section>
+</main>
+<footer>Built by <a href="https://github.com/wkriesel">Wes Kriesel</a> &middot; every response is invented</footer>
+</body>
+</html>
